@@ -263,6 +263,8 @@ func TestContextCreateCmd(t *testing.T) {
 	mesheryctlflags.InitValidators(SystemCmd)
 	for _, tt := range tests {
 		t.Run(tt.Name, func(t *testing.T) {
+			// Reset flags to prevent bleed-over between tests
+			contextCreateFlags = cmdContextCreateFlags{}
 			buf := utils.SetupMeshkitLoggerTesting(t, false)
 			defer buf.Reset()
 
@@ -343,6 +345,8 @@ func TestContextAddUppercaseCmd(t *testing.T) {
 	mesheryctlflags.InitValidators(SystemCmd)
 	for _, tt := range tests {
 		t.Run(tt.Name, func(t *testing.T) {
+			// Reset flags to prevent bleed-over between tests
+			contextCreateFlags = cmdContextCreateFlags{}
 			buf := utils.SetupMeshkitLoggerTesting(t, false)
 			defer buf.Reset()
 
