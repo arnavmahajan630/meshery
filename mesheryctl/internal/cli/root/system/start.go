@@ -517,6 +517,13 @@ func init() {
 
 // Apply Meshery helm charts
 func applyHelmCharts(kubeClient *meshkitkube.Client, currCtx *config.Context, mesheryImageVersion string, dryRun bool, act meshkitkube.HelmChartAction, callbackURL, providerURL string) error {
+	// Validate component references before starting
+	for _, component := range currCtx.GetComponents() {
+		if utils.Services[component].Image == "" {
+			return ErrInvalidComponent(component)
+		}
+	}
+
 	// get value overrides to install the helm chart
 	overrideValues := utils.SetOverrideValues(currCtx, mesheryImageVersion, callbackURL, providerURL)
 
