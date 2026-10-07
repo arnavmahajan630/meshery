@@ -251,6 +251,13 @@ func TestContextCreateCmd(t *testing.T) {
 			ExpectedError:  utils.ErrInvalidArgument(fmt.Errorf("%s\n%s", errArgMsg, contextCreateUsageMsg)),
 			IsOutputGolden: false,
 		},
+		{
+			Name:           "Create a context with a non-existent component fails",
+			Args:           []string{"context", "create", "local4", "--components", "invalid-component"},
+			ExpectError:    true,
+			ExpectedError:  ErrInvalidComponent("invalid-component"),
+			IsOutputGolden: false,
+		},
 	}
 
 	mesheryctlflags.InitValidators(SystemCmd)
