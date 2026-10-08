@@ -287,10 +287,11 @@ func TestContextCreateCmd(t *testing.T) {
 					utils.AssertMeshkitErrorsEqual(t, err, tt.ExpectedError)
 					if tt.Name == "Create a context with a non-existent component fails" {
 						mctl, err := config.GetMesheryCtl(viper.GetViper())
-						if err == nil {
-							if _, ok := mctl.Contexts["local4"]; ok {
-								t.Errorf("Expected context 'local4' to not be saved, but it was found")
-							}
+						if err != nil {
+							t.Fatalf("Failed to load configuration: %v", err)
+						}
+						if _, ok := mctl.Contexts["local4"]; ok {
+							t.Errorf("Expected context 'local4' to not be saved, but it was found")
 						}
 					}
 					return
