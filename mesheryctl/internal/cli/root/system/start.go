@@ -296,10 +296,11 @@ func buildAllowedDockerServices(currCtx *config.Context, mesheryImageVersion, ca
 	requiredServices := []string{"meshery", "watchtower"}
 	allowedServices := map[string]utils.Service{}
 
+	if err := validateComponents(currCtx.GetComponents()); err != nil {
+		return nil, err
+	}
+
 	for _, component := range currCtx.GetComponents() {
-		if utils.Services[component].Image == "" {
-			return nil, ErrInvalidComponent(component)
-		}
 
 		service, ok := utils.Services[component]
 		if !ok {
@@ -519,10 +520,8 @@ func init() {
 func applyHelmCharts(kubeClient *meshkitkube.Client, currCtx *config.Context, mesheryImageVersion string, dryRun bool, act meshkitkube.HelmChartAction, callbackURL, providerURL string) error {
 	// Validate component references before starting
 	if act != meshkitkube.UNINSTALL {
-		for _, component := range currCtx.GetComponents() {
-			if utils.Services[component].Image == "" {
-				return ErrInvalidComponent(component)
-			}
+		if err := validateComponents(currCtx.GetComponents()); err != nil {
+			return err
 		}
 	}
 

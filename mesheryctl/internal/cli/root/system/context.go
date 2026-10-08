@@ -101,10 +101,8 @@ mesheryctl system context create [context-name] --components [meshery-nsm] --pla
 		}
 
 		if len(contextCreateFlags.Components) >= 1 {
-			for _, component := range contextCreateFlags.Components {
-				if utils.Services[component].Image == "" {
-					return ErrInvalidComponent(component)
-				}
+			if err := validateComponents(contextCreateFlags.Components); err != nil {
+				return err
 			}
 			tempCntxt.Components = contextCreateFlags.Components
 		}
