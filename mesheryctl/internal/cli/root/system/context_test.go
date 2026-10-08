@@ -8,7 +8,9 @@ import (
 	"testing"
 
 	mesheryctlflags "github.com/meshery/meshery/mesheryctl/internal/cli/pkg/flags"
+	"github.com/meshery/meshery/mesheryctl/internal/cli/root/config"
 	"github.com/meshery/meshery/mesheryctl/pkg/utils"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v3"
 )
@@ -252,6 +254,12 @@ func TestContextCreateCmd(t *testing.T) {
 			IsOutputGolden: false,
 		},
 		{
+			Name:                 "Create a context with a valid component succeeds",
+			Args:                 []string{"context", "create", "local-valid", "--components", "meshery-istio"},
+			ExpectedResponse:     "createContextValid.golden",
+			ExpectedResponseYaml: "addExpectedValid.golden",
+		},
+		{
 			Name:           "Create a context with a non-existent component fails",
 			Args:           []string{"context", "create", "local4", "--components", "invalid-component"},
 			ExpectError:    true,
@@ -277,6 +285,14 @@ func TestContextCreateCmd(t *testing.T) {
 				// if we're supposed to get an error
 				if tt.ExpectError {
 					utils.AssertMeshkitErrorsEqual(t, err, tt.ExpectedError)
+					if tt.Name == "Create a context with a non-existent component fails" {
+						mctl, err := config.GetMesheryCtl(viper.GetViper())
+						if err == nil {
+							if _, ok := mctl.Contexts["local4"]; ok {
+								t.Errorf("Expected context 'local4' to not be saved, but it was found")
+							}
+						}
+					}
 					return
 				}
 				t.Fatal(err)
